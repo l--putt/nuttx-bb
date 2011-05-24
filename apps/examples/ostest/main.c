@@ -33,6 +33,53 @@
  *
  ****************************************************************************/
 
+/*
+ * Debug stuff for Compal E99
+ * taken from Osmocom-BB init.c
+ *
+ * Turn on backlight on entry and off when done
+ */
+
+#include <stdint.h>
+#include <arch/calypso/memory.h>
+
+#define ARMIO_LATCH_OUT 0xfffe4802
+#define IO_CNTL_REG	0xfffe4804
+#define ASIC_CONF_REG	0xfffef008
+
+static void lights_on(void)
+{
+	uint16_t reg;
+
+	reg = readw(ASIC_CONF_REG);
+	/* LCD Set I/O(3) / SA0 to I/O(3) mode */
+	reg &= ~( (1 << 12) | (1 << 10) | (1 << 7) | (1 << 1)) ;
+	/* don't set function pins to I2C Mode, C155 uses UWire */
+	/* TWL3025: Set SPI+RIF RX clock to rising edge */
+	reg |= (1 << 13) | (1 << 14);
+	writew(reg, ASIC_CONF_REG);
+
+	/* LCD Set I/O(3) to output mode and enable C155 backlight (IO1) */
+	/* FIXME: Put the display backlight control to backlight.c */
+	reg = readw(IO_CNTL_REG);
+	reg &= ~( (1 << 3) | (1 << 1));
+	writew(reg, IO_CNTL_REG);
+
+	/* LCD Set I/O(3) output low */
+	reg = readw(ARMIO_LATCH_OUT);
+	reg &= ~(1 << 3);
+	reg |= (1 << 1);
+	writew(reg, ARMIO_LATCH_OUT);
+}
+
+static void lights_off(void)
+{
+	uint16_t reg;
+	reg = readw(ARMIO_LATCH_OUT);
+	reg &= ~(1 << 1);
+	writew(reg, ARMIO_LATCH_OUT);
+}
+
 /****************************************************************************
  * Included Files
  ****************************************************************************/
@@ -421,6 +468,7 @@ static int user_main(int argc, char *argv[])
 #endif
     }
   printf("user_main: Exitting\n");
+  lights_off();
   return 0;
 }
 
@@ -456,6 +504,8 @@ static void stdio_test(void)
 int user_start(int argc, char *argv[])
 {
   int result;
+
+  lights_on();
 
   /* Verify that stdio works first */
 
