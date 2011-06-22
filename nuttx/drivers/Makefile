@@ -48,6 +48,7 @@ VPATH = .
 # files to the source file list, add its DEPPATH info, and will add
 # the appropriate paths to the VPATH variable
 
+include sercomm/Make.defs
 include serial/Make.defs
 include net/Make.defs
 include pipes/Make.defs
