@@ -131,6 +131,10 @@ static void set_default_priorities(void)
 		val = readw(IRQ_REG(ILR_IRQ(i)));
 		val &= ~(0x1f << 2);
 		val |= prio << 2;
+		
+		/* Make edge mode default. Hopefully causes less trouble */
+		val |= 0x02;
+		
 		writew(val, IRQ_REG(ILR_IRQ(i)));
 	}
 }
