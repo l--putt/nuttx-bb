@@ -51,6 +51,33 @@
 
 
 /****************************************************************************
+ * Power control
+ ****************************************************************************/
+
+#include <stdio.h>
+#include <nuttx/spi.h>
+
+int poweroff(void)
+{
+	uint16_t tx;
+	struct spi_dev_s *spi = up_spiinitialize(0);
+	
+	printf("cutting power...\n\n");
+	usleep(10000);
+
+	SPI_SETBITS(spi, 16);
+
+	tx = (1 << 6) | (1 << 1);
+	SPI_SNDBLOCK(spi, &tx, 1);
+
+	tx = (1 << 6) | (30 << 1);
+	SPI_SNDBLOCK(spi, &tx, 1);
+
+	return 0;
+}
+
+
+/****************************************************************************
  * HW access
  ****************************************************************************/
 
@@ -135,6 +162,9 @@ static int pwr_btn_dec(uint32_t *state, uint8_t reg, char *buf, size_t *len)
 	} else {
 		/* Check for released power button. */
 	 	if(*state & 0x80000000) {
+	 		/* XXX: just cut power, pending better solution */
+	 		poweroff();
+
 	 		buf[0] = 'Z';
 	 		*len = 1;
 
