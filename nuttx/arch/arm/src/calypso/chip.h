@@ -52,38 +52,43 @@
 
 #define UART_IRDA_BASE         0xffff5000
 #define UART_MODEM_BASE        0xffff5800
+#define UART_UIR               0xffff6000
 #define UARTn_IO_RANGE         0x00000800
 
 /* Common UART Registers.  Expressed as offsets from the BASE address */
 
 #define UART_RHR_OFFS          0x00000000 /* Rcv Holding Register */
 #define UART_THR_OFFS          0x00000000 /* Xmit Holding Register */
-#define UART_FCR_OFFS          0x00000008 /* FIFO Control Register */
-#define UART_RFCR_OFFS         0x00000008 /* Rcv FIFO Control Register */
-#define UART_TFCR_OFFS         0x00000008 /* Xmit FIFO Control Register */
-#define UART_SCR_OFFS          0x0000000c /* Status Control Register */
-#define UART_LCR_OFFS          0x00000010 /* Line Control Register */
+#define UART_FCR_OFFS          0x00000002 /* FIFO Control Register */
+#define UART_RFCR_OFFS         0x00000002 /* Rcv FIFO Control Register */
+#define UART_TFCR_OFFS         0x00000002 /* Xmit FIFO Control Register */
+#define UART_SCR_OFFS          0x00000010 /* Status Control Register */
+#define UART_LCR_OFFS          0x00000003 /* Line Control Register */
 #define UART_LSR_OFFS          0x00000005 /* Line Status Register */
 #define UART_SSR_OFFS          0x00000011 /* Supplementary Status Register */
-#define UART_MCR_OFFS          0x0000001c /* Modem Control Register */
-#define UART_MSR_OFFS          0x00000020 /* Modem Status Register */
-#define UART_IER_OFFS          0x00000024 /* Interrupt Enable Register */
-#define UART_ISR_OFFS          0x00000028 /* Interrupt Status Register */
-#define UART_EFR_OFFS          0x0000002c /* Enhanced Feature Register */
-#define UART_XON1_OFFS         0x00000030 /* XON1 Character Register */
-#define UART_XON2_OFFS         0x00000034 /* XON2 Character Register */
-#define UART_XOFF1_OFFS        0x00000038 /* XOFF1 Character Register */
-#define UART_XOFF2_OFFS        0x0000003c /* XOFF2 Character Register */
-#define UART_SPR_OFFS          0x00000040 /* Scratch-pad Register */
-#define UART_DIV_115K_OFFS     0x00000044 /* Divisor for baud generation */
-#define UART_DIV_BIT_RATE_OFFS 0x00000048 /* For baud rate generation */
-#define UART_TCR_OFFS          0x0000004c /* Transmission Control Register */
-#define UART_TLR_OFFS          0x00000050 /* Trigger Level Register */
-#define UART_MDR_OFFS          0x00000054 /* Mode Definition Register */
+#define UART_MCR_OFFS          0x00000004 /* Modem Control Register */
+#define UART_MSR_OFFS          0x00000006 /* Modem Status Register */
+#define UART_IER_OFFS          0x00000001 /* Interrupt Enable Register */
+#define UART_ISR_OFFS          0x00000002 /* Interrupt Status Register */
+#define UART_EFR_OFFS          0x00000002 /* Enhanced Feature Register */
+#define UART_XON1_OFFS         0x00000004 /* XON1 Character Register */
+#define UART_XON2_OFFS         0x00000005 /* XON2 Character Register */
+#define UART_XOFF1_OFFS        0x00000006 /* XOFF1 Character Register */
+#define UART_XOFF2_OFFS        0x00000007 /* XOFF2 Character Register */
+#define UART_SPR_OFFS          0x00000007 /* Scratch-pad Register */
+#define UART_DIV_LOW_OFFS      0x00000000 /* Divisor for baud generation */
+#define UART_DIV_HIGH_OFFS     0x00000001
+#define UART_TCR_OFFS          0x00000006 /* Transmission Control Register */
+#define UART_TLR_OFFS          0x00000007 /* Trigger Level Register */
+#define UART_MDR_OFFS          0x00000008 /* Mode Definition Register */
 
 /* UART Settings ************************************************************/
 
 /* Miscellaneous UART settings. */
+
+#define UART_REGISTER_BITS   8
+#define UART_IRQ_MODEM       IRQ_UART_MODEM
+#define UART_IRQ_IRDA        IRQ_UART_IRDA
 
 #define UART_RX_FIFO_NOEMPTY 0x00000001
 #define UART_SSR_TXFULL      0x00000001
@@ -98,6 +103,8 @@
                                         /* Bit 5: Parity Type 2 */
 #define UART_LCR_PAREVEN     0x00000010 /* Bit 4: Parity Type 1 */
 #define UART_LCR_PARODD      0x00000000
+#define UART_LCR_PARMARK     0x00000010
+#define UART_LCR_PARSPACE    0x00000011
 #define UART_LCR_PAREN       0x00000008 /* Bit 3: Paity Enable */
 #define UART_LCR_PARDIS      0x00000000
 #define UART_LCR_2STOP       0x00000004 /* Bit 2: Number of stop bits */
@@ -107,7 +114,7 @@
 #define UART_LCR_7BITS       0x00000002
 #define UART_LCR_8BITS       0x00000003
 
-#define UART_FCR_FTL         0x00000000
+#define UART_FCR_FTL         0x000000f0
 #define UART_FCR_FIFO_EN     0x00000001
 #define UART_FCR_TX_CLR      0x00000002
 #define UART_FCR_RX_CLR      0x00000004
@@ -121,9 +128,9 @@
 #define UART_IER_CTSINT      0x00000080 /* IrDA UART only */
 #define UART_IER_INTMASK     0x000000ff
 
-#define BAUD_115200          0x00000001
-#define BAUD_57600           0x00000002
-#define BAUD_38400           0x00000003
+#define BAUD_115200          0x00000007
+#define BAUD_57600           0x00000014
+#define BAUD_38400           0x00000021
 #define BAUD_19200           0x00000006
 #define BAUD_9600            0x0000000C
 #define BAUD_4800            0x00000018
